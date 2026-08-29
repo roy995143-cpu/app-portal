@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    button { padding: 6px 12px; cursor: pointer; }
+    .btn-approve { background: #28a745; color: white; border: none; }
+    .btn-delete { background: #dc3545; color: white; border: none; }
+  </style>
+</head>
+<body>
+  <h2>Admin Management Portal</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>App Name</th>
+        <th>File Name</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="appTable">
+      </tbody>
+  </table>
+
+  <script>
+    async function loadApps() {
+      const res = await fetch('/api/admin/apps', {
+        headers: { 'Authorization': 'Bearer ADMIN_TOKEN_HERE' }
+      });
+      const apps = await res.json();
+      
+      const tbody = document.getElementById('appTable');
+      tbody.innerHTML = apps.map(app => `
+        <tr>
+          <td>${app.name}</td>
+          <td>${app.filename}</td>
+          <td>${app.status}</td>
+          <td>
+            <button class="btn-approve" onclick="approveApp('${app.id}')">Approve</button>
+            <button class="btn-delete" onclick="deleteApp('${app.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function approveApp(id) {
+      await fetch(`/api/admin/approve/${id}`, { method: 'PATCH' });
+      loadApps();
+    }
+
+    async function deleteApp(id) {
+      await fetch(`/api/admin/delete/${id}`, { method: 'DELETE' });
+      loadApps();
+    }
+
+    loadApps();
+  </script>
+</body>
+</html>
