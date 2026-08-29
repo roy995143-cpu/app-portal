@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>App Portal</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; max-width: 400px; }
+    input, button { display: block; margin-bottom: 12px; width: 100%; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Upload an App</h2>
+    <form id="uploadForm">
+      <input type="text" id="appName" placeholder="App Name" required />
+      <input type="file" id="appFile" accept=".apk,.exe,.zip" required />
+      <button type="submit">Upload App</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('appName', document.getElementById('appName').value);
+      formData.append('appFile', document.getElementById('appFile').files[0]);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      if (response.ok) alert('Upload successful!');
+    });
+  </script>
+</body>
+</html>
